@@ -10,7 +10,8 @@ export const dataSlice = createSlice({
     initialState,
     reducers: {
         setData: (state, action) => {
-            return {...state, apiData : action.payload}
+            //everything in the state stays the same (...state) except apiData (apiData: action.payload)
+            return { ...state, apiData: action.payload }
         },
         clearData: () => {
             return initialState
@@ -29,11 +30,18 @@ export const dataSlice = createSlice({
 
 export const { setData, clearData, incrementId, decrementId, inputId } = dataSlice.actions
 
+//thunk action creator
 export const fetchData = () => {
+    //thunk about data
     const fetchDataThunk = async (dispatch, getState) => {
+        //state that matters to be able to know what to do
         let state = getState()
-        const response = await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${state.data.objectId}`)
+
+        //side effects 
+        const apiURl = "https://collectionapi.metmuseum.org/public/collection/v1/objects"
+        const response = await fetch(`${apiURl}/${state.data.objectId}`)
         const rData = await response.json()
+        //send that data to the store by dispatching the "setData" action with a payload of rData
         dispatch(setData(rData))
     }
     return fetchDataThunk
